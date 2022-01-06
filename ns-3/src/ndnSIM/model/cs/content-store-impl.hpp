@@ -33,6 +33,10 @@
 
 #include "../../utils/trie/trie-with-policy.hpp"
 
+/**
+ * 每个策略都会用这个类的实现,包括lru,fifo等
+ */
+
 namespace ns3 {
 namespace ndn {
 namespace cs {
@@ -160,6 +164,7 @@ private:
 //////////////////////////////////////////
 
 template<class Policy>
+// LogComponent ContentStoreImpl<Policy>::g_log = LogComponent(("ndn.cs." + "chaochao").c_str(), __FILE__);
 LogComponent ContentStoreImpl<Policy>::g_log = LogComponent(("ndn.cs." + Policy::GetName()).c_str(), __FILE__);
 
 template<class Policy>
@@ -201,11 +206,14 @@ private:
   const Exclude& m_exclude;
 };
 
+// 这个函数用来查缓存是否命中
 template<class Policy>
 shared_ptr<Data>
 ContentStoreImpl<Policy>::Lookup(shared_ptr<const Interest> interest)
 {
-  NS_LOG_FUNCTION(this << interest->getName());
+  // 这个LOG的标签是什么? 根据不同的策略而不同,但是都会用到这里的实现 
+	// NS_LOG_FUNCTION(this << interest->getName());
+  // std::cout << "oldCS: " << interest->getName() << std::endl;
 
   typename super::const_iterator node;
   if (interest->getExclude().empty()) {
@@ -217,6 +225,9 @@ ContentStoreImpl<Policy>::Lookup(shared_ptr<const Interest> interest)
   }
 
   if (node != this->end()) {
+    // 改为只有命中时才输出,这是为了不显示那些管理兴趣查询缓存的LOG
+    NS_LOG_INFO("Cache Hit: " << interest->getName());
+
     this->m_cacheHitsTrace(interest, node->payload()->GetData());
 
     shared_ptr<Data> copy = make_shared<Data>(*node->payload()->GetData());
@@ -232,7 +243,19 @@ template<class Policy>
 bool
 ContentStoreImpl<Policy>::Add(shared_ptr<const Data> data)
 {
-  NS_LOG_FUNCTION(this << data->getName());
+  // NS_LOG_FUNCTION(this << data->getName());
+  
+  // 判断 data 的name,是不是正经数据 (即排除掉那些管理兴趣/数据)
+  std::string testStr = "/localhost/nfd/";
+  std::string dataName =data->getName().toUri();
+  std::string::size_type idx = dataName.find(testStr);
+  bool printFlag = false;
+  if (idx == std::string::npos) { // 
+    printFlag = true;
+  } 
+  // else {
+  //   std::cout << "chaochao idx: " << idx << std::endl;
+  // }
 
   Ptr<entry> newEntry = Create<entry>(this, data);
   std::pair<typename super::iterator, bool> result = super::insert(data->getName(), newEntry);
@@ -242,6 +265,9 @@ ContentStoreImpl<Policy>::Add(shared_ptr<const Data> data)
       newEntry->SetTrie(result.first);
 
       m_didAddEntry(newEntry);
+      if (printFlag) {
+        NS_LOG_INFO("Cache Insert: " << data->getName());
+      }
       return true;
     }
     else {
