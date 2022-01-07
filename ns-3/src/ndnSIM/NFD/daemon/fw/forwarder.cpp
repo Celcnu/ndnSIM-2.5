@@ -138,6 +138,8 @@ Forwarder::onIncomingInterest(Face& inFace, const Interest& interest)
   const pit::InRecordCollection& inRecords = pitEntry->getInRecords();
   bool isPending = inRecords.begin() != inRecords.end();
   if (!isPending) {
+	// 它这个版本里应该有两个CS的实现,一个在NFD里,一个在ndnSIM里,看你具体用的哪一个
+	// 如果不设置 默认就是NFD CS
     if (m_csFromNdnSim == nullptr) {
       m_cs.find(interest,
                 bind(&Forwarder::onContentStoreHit, this, ref(inFace), pitEntry, _1, _2),

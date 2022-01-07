@@ -60,6 +60,7 @@ namespace ns3 {
 int
 main(int argc, char* argv[])
 {
+//   std::cout << "chaochao main" << std::endl;
   CommandLine cmd;
   cmd.Parse(argc, argv);
 
@@ -87,7 +88,7 @@ main(int argc, char* argv[])
 
   for (int i = 0; i < 4; i++) {
     ndn::AppHelper consumerHelper("ns3::ndn::ConsumerCbr");
-    consumerHelper.SetAttribute("Frequency", StringValue("10")); // 100 interests a second
+    consumerHelper.SetAttribute("Frequency", StringValue("1")); // 100 interests a second
 
     // Each consumer will express the same data /root/<seq-no>
     consumerHelper.SetPrefix("/root");

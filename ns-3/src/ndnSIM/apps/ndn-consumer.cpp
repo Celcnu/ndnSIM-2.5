@@ -194,6 +194,7 @@ Consumer::SendPacket()
   interest->setInterestLifetime(interestLifeTime);
 
   // NS_LOG_INFO ("Requesting Interest: \n" << *interest);
+  // std::cout << "chaochao interest " << seq << std::endl;
   NS_LOG_INFO("> Interest for " << seq);
 
   WillSendOutInterest(seq);
@@ -216,7 +217,8 @@ Consumer::OnData(shared_ptr<const Data> data)
 
   App::OnData(data); // tracing inside
 
-  NS_LOG_FUNCTION(this << data);
+  // 改为打印data name
+  NS_LOG_FUNCTION(this << data->getName());
 
   // NS_LOG_INFO ("Received content object: " << boost::cref(*data));
 
@@ -224,11 +226,15 @@ Consumer::OnData(shared_ptr<const Data> data)
   uint32_t seq = data->getName().at(-1).toSequenceNumber();
   NS_LOG_INFO("< DATA for " << seq);
 
+  // 计算数据包遍历的跳数
   int hopCount = 0;
   auto hopCountTag = data->getTag<lp::HopCountTag>();
   if (hopCountTag != nullptr) { // e.g., packet came from local node's cache
     hopCount = *hopCountTag;
+  } else {
+    std::cout << "hopCountTg nullptr" << std::endl;
   }
+  
   NS_LOG_DEBUG("Hop count: " << hopCount);
 
   SeqTimeoutsContainer::iterator entry = m_seqLastDelay.find(seq);
