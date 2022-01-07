@@ -194,7 +194,6 @@ Consumer::SendPacket()
   interest->setInterestLifetime(interestLifeTime);
 
   // NS_LOG_INFO ("Requesting Interest: \n" << *interest);
-  // std::cout << "chaochao interest " << seq << std::endl;
   NS_LOG_INFO("> Interest for " << seq);
 
   WillSendOutInterest(seq);
@@ -217,8 +216,7 @@ Consumer::OnData(shared_ptr<const Data> data)
 
   App::OnData(data); // tracing inside
 
-  // 改为打印data name
-  NS_LOG_FUNCTION(this << data->getName());
+  NS_LOG_FUNCTION(this << data);
 
   // NS_LOG_INFO ("Received content object: " << boost::cref(*data));
 

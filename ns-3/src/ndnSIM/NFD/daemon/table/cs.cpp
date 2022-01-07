@@ -93,8 +93,6 @@ Cs::find(const Interest& interest,
          const HitCallback& hitCallback,
          const MissCallback& missCallback) const
 {
-  // 用的不是这个地方??? 如果设置SetOldContentStore就不会用这里了!
-  // std::cout << "chaochao find" << std::endl;
   BOOST_ASSERT(static_cast<bool>(hitCallback));
   BOOST_ASSERT(static_cast<bool>(missCallback));
 

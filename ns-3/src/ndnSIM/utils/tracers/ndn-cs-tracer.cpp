@@ -201,7 +201,6 @@ void
 CsTracer::Connect()
 {
   Ptr<ContentStore> cs = m_nodePtr->GetObject<ContentStore>();
-  // CacheHits是string类型
   cs->TraceConnectWithoutContext("CacheHits", MakeCallback(&CsTracer::CacheHits, this));
   cs->TraceConnectWithoutContext("CacheMisses", MakeCallback(&CsTracer::CacheMisses, this));
 
@@ -256,9 +255,7 @@ CsTracer::Print(std::ostream& os) const
   Time time = Simulator::Now();
 
   PRINTER("CacheHits", m_cacheHits);
-
-  // 这个miss值不准,不用它(实际上我们只需要看hit就够了)
-  // PRINTER("CacheMisses", m_cacheMisses);
+  PRINTER("CacheMisses", m_cacheMisses);
 }
 
 void
